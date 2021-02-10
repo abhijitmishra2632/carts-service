@@ -9,9 +9,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="item001")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Item {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,37 +28,6 @@ public class Item {
 	@JoinColumn(name = "mobileNumber")
 	@JsonBackReference
 	private UserCart cart;
-	
-	public Item() {
-		super();
-	}
-	
-	public Long getItemId() {
-		return itemId;
-	}
-
-	public void setItemId(Long itemId) {
-		this.itemId = itemId;
-	}
-
-	public int getProductId() {
-		return productId;
-	}
-	public void setProductId(int productId) {
-		this.productId = productId;
-	}
-	public int getQuantityOfProduct() {
-		return quantityOfProduct;
-	}
-	public void setQuantityOfProduct(int quantityOfProduct) {
-		this.quantityOfProduct = quantityOfProduct;
-	}
-	public UserCart getCart() {
-		return cart;
-	}
-	public void setCart(UserCart cart) {
-		this.cart = cart;
-	}
 
 	@Override
 	public int hashCode() {

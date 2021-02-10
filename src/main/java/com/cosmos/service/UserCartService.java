@@ -1,14 +1,19 @@
 package com.cosmos.service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
+import com.cosmos.pojo.ItemGist;
+import com.cosmos.pojo.ProductGist;
+import com.cosmos.pojo.UserCartGist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cosmos.model.Item;
 import com.cosmos.model.UserCart;
 import com.cosmos.repository.ItemRepository;
 import com.cosmos.repository.UserCartRepository;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class UserCartService {
@@ -17,9 +22,31 @@ public class UserCartService {
 	@Autowired
 	private ItemRepository itemRepository;
 
-	public UserCart getUserCart(Long mobileNumber) {
-		// TODO Auto-generated method stub
-		
+	@Autowired
+	RestTemplate restTemplate;
+
+	private String productUrl="http://PRODUCTS-SERVICE/product/";
+
+	public UserCartGist getUserCart(Long mobileNumber) {
+		UserCart userCart = getUserCartById(mobileNumber);
+		UserCartGist userCartGist = new UserCartGist();
+		userCartGist.setMobileNumber(mobileNumber);
+		Set<ItemGist> itemGistSet = new HashSet<>();
+		userCart.getItems().forEach(
+				item->{
+					ItemGist itemGist =new ItemGist();
+					ProductGist productGist=restTemplate.getForObject(productUrl+item.getProductId(), ProductGist.class);
+					itemGist.setItem(item);
+					itemGist.setProduct(productGist);
+					itemGistSet.add(itemGist);
+				}
+		);
+		userCartGist.setItemGistSet(itemGistSet);
+		return userCartGist;
+	}
+
+
+	public UserCart getUserCartById(Long mobileNumber) {
 		Optional<UserCart> dbcart = userCartRepository.findById(mobileNumber);
 		if(dbcart.isPresent()) {
 			return dbcart.get();
