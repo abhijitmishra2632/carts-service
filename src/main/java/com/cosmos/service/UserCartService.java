@@ -7,6 +7,7 @@ import java.util.Set;
 import com.cosmos.pojo.ItemGist;
 import com.cosmos.pojo.ProductGist;
 import com.cosmos.pojo.UserCartGist;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import com.cosmos.repository.UserCartRepository;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Slf4j
 public class UserCartService {
 	@Autowired
 	private UserCartRepository userCartRepository;
@@ -28,6 +30,7 @@ public class UserCartService {
 	private String productUrl="http://PRODUCTS-SERVICE/product/";
 
 	public UserCartGist getUserCart(Long mobileNumber) {
+		log.info("getUserCart called for : "+mobileNumber);
 		UserCart userCart = getUserCartById(mobileNumber);
 		UserCartGist userCartGist = new UserCartGist();
 		userCartGist.setMobileNumber(mobileNumber);
@@ -42,6 +45,7 @@ public class UserCartService {
 				}
 		);
 		userCartGist.setItemGistSet(itemGistSet);
+		log.info("UserCartGist is: "+userCartGist);
 		return userCartGist;
 	}
 
