@@ -85,11 +85,14 @@ public class UserCartService {
 		System.out.println("updateUserCart called");
 		cart.getItems().stream()
 		.forEach(i->System.out.print(i.getItemId()));
+		cart.getItems().removeIf(i-> i.getQuantityOfProduct()==0);
 		cart.getItems().stream()
 		.forEach(item->item.setCart(cart));
-		cart.getItems().stream()
-		.forEach(i->itemRepository.save(i));
-		System.out.println("updateUserCart called and ended successfully");
+		userCartRepository.deleteAll();
+		userCartRepository.save(cart);
+		//cart.getItems().stream()
+		//.forEach(i->itemRepository.save(i));
+		//System.out.println("updateUserCart called and ended successfully");
 		
 	}
 
