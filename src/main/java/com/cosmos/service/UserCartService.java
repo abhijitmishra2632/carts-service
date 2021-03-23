@@ -35,16 +35,18 @@ public class UserCartService {
 		UserCartGist userCartGist = new UserCartGist();
 		userCartGist.setMobileNumber(mobileNumber);
 		Set<ItemGist> itemGistSet = new HashSet<>();
-		userCart.getItems().forEach(
-				item->{
-					ItemGist itemGist =new ItemGist();
-					ProductGist productGist=restTemplate.getForObject(productUrl+item.getProductId(), ProductGist.class);
-					itemGist.setItem(item);
-					itemGist.setProduct(productGist);
-					itemGistSet.add(itemGist);
-				}
-		);
-		userCartGist.setItemGistSet(itemGistSet);
+		if(userCart!=null){
+			userCart.getItems().forEach(
+					item->{
+						ItemGist itemGist =new ItemGist();
+						ProductGist productGist=restTemplate.getForObject(productUrl+item.getProductId(), ProductGist.class);
+						itemGist.setItem(item);
+						itemGist.setProduct(productGist);
+						itemGistSet.add(itemGist);
+					}
+			);
+			userCartGist.setItemGistSet(itemGistSet);
+		}
 		log.info("UserCartGist is: "+userCartGist);
 		return userCartGist;
 	}
@@ -83,12 +85,15 @@ public class UserCartService {
 
 	public void updateUserCart(Long mobileNumber, UserCart cart) {
 		System.out.println("updateUserCart called");
+		Optional<UserCart> dbcart = userCartRepository.findById(mobileNumber);
+		if(dbcart.isPresent()) {
+			userCartRepository.delete(dbcart.get());
+		}
 		cart.getItems().stream()
 		.forEach(i->System.out.print(i.getItemId()));
 		cart.getItems().removeIf(i-> i.getQuantityOfProduct()==0);
 		cart.getItems().stream()
 		.forEach(item->item.setCart(cart));
-		userCartRepository.deleteAll();
 		userCartRepository.save(cart);
 		//cart.getItems().stream()
 		//.forEach(i->itemRepository.save(i));
@@ -96,4 +101,10 @@ public class UserCartService {
 		
 	}
 
+	public void deleteUserCartForUser(Long mobileNumber) {
+		Optional<UserCart> dbcart = userCartRepository.findById(mobileNumber);
+		if(dbcart.isPresent()) {
+			userCartRepository.delete(dbcart.get());
+		}
+	}
 }
